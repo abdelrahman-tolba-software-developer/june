@@ -73,7 +73,7 @@ class JuneBuilder<T extends JuneState> extends StatelessWidget {
     June.getState(() => createInstance(), tag: tag, permanent: global);
 
     return Binder(
-      init: init == null ? null : () => init!,
+      init: init == null ? () => createInstance() : () => init!,
       global: global,
       autoRemove: autoRemove,
       assignId: assignId,

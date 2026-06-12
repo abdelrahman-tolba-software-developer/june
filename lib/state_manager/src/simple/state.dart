@@ -512,9 +512,18 @@ class BindElement<T> extends InheritedElement {
 
     if (localController is JuneState) {
       _remove?.call();
-      _remove = (widget.id == null)
-          ? localController.addListener(filter)
-          : localController.addListenerId(widget.id, filter);
+      if (widget.id == null) {
+        _remove = localController.addListener(filter);
+      } else if (widget.id is JuneState) {
+        // id IS the JuneState instance the user calls setState([this]) on.
+        // Register directly on it so the HashMap lookup matches.
+        final idState = widget.id as JuneState;
+        _remove = idState.addListenerId(widget.id, filter);
+      } else {
+        // id is a primitive tag (String, int, enum…). Keep existing behaviour:
+        // controller calls setState(['tag']) which searches localController.
+        _remove = localController.addListenerId(widget.id, filter);
+      }
     } else if (localController is Listenable) {
       _remove?.call();
       localController.addListener(filter);
